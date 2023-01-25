@@ -12,25 +12,42 @@ dmxmidi_conf = {
             'ledbar_2': {'type': 'rgb', 'start_channel': 3},
             'ledbar_3': {'type': 'rgb', 'start_channel': 6},
             'ledbar_4': {'type': 'rgb', 'start_channel': 9},
-            'par64_2': {'type': 'rgba', 'start_channel': 12},
-            'par64_1': {'type': 'rgba', 'start_channel': 17}
+            'par64_1': {'type': 'rgba', 'start_channel': 12},
+            'par64_2': {'type': 'rgba', 'start_channel': 17}
         },
         'array': ['par64_1', 'ledbar_1', 'ledbar_2', 'ledbar_3', 'ledbar_4', 'par64_2'],
         'rgb_colors': {
             'blk': [0, 0, 0],
             'red': [1, 0, 0],
             'grn': [0, 1, 0],
+            'yel': [1, 1, 0],
             'blu': [0, 0, 1],
+            'mgn': [1, 0, 1],
+            'cyn': [0, 1, 1],
             'wht': [1, 1, 1]
         },
         'scenes': [
             ['blk', 'blk', 'blk', 'blk', 'blk', 'blk'],
             ['blu', 'red', 'blu', 'red', 'blu', 'red'],
-            ['red', 'blu', 'red', 'blu', 'red', 'blu']
+            ['red', 'blu', 'red', 'blu', 'red', 'blu'],
+            ['wht', 'wht', 'wht', 'wht', 'wht', 'wht'],
+            ['blu', 'blk', 'blk', 'blk', 'blk', 'blk'],
+            ['blk', 'blu', 'blk', 'blk', 'blk', 'blk'],
+            ['blk', 'blk', 'blu', 'blk', 'blk', 'blk'],
+            ['blk', 'blk', 'blk', 'blu', 'blk', 'blk'],
+            ['blk', 'blk', 'blk', 'blk', 'blu', 'blk'],
+            ['blk', 'blk', 'blk', 'blk', 'blk', 'blu'],
+            ['blu', 'blk', 'blk', 'blk', 'blk', 'blu'],
+            ['blk', 'blu', 'blk', 'blk', 'blu', 'blk'],
+            ['blk', 'blk', 'blu', 'blu', 'blk', 'blk'],
+            ['blu', 'blu', 'blu', 'blu', 'blu', 'blu']
         ],
         'chases': [
             [0],
-            [1, 2]
+            [1, 2],
+            [1, 1, 2, 2],
+            [1, 0, 2, 0],
+            [3, 0, 4, 5,  6, 7, 8, 9,  8, 7, 6, 5,  10, 11, 12, 13]
         ]
     },
     'midi': {
@@ -136,7 +153,7 @@ class DMXMidi:
 
 dmxmidi = DMXMidi(dmxmidi_conf)
 
-dmxmidi.start(0, 120, 0.5)
+dmxmidi.start(0, 120, 0)
 
 print("DMXMidi")
 print("Running")
