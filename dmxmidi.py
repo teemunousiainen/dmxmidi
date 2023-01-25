@@ -31,6 +31,7 @@ dmxmidi_conf = {
             ['blu', 'red', 'blu', 'red', 'blu', 'red'],
             ['red', 'blu', 'red', 'blu', 'red', 'blu'],
             ['wht', 'wht', 'wht', 'wht', 'wht', 'wht'],
+
             ['blu', 'blk', 'blk', 'blk', 'blk', 'blk'],
             ['blk', 'blu', 'blk', 'blk', 'blk', 'blk'],
             ['blk', 'blk', 'blu', 'blk', 'blk', 'blk'],
@@ -40,14 +41,24 @@ dmxmidi_conf = {
             ['blu', 'blk', 'blk', 'blk', 'blk', 'blu'],
             ['blk', 'blu', 'blk', 'blk', 'blu', 'blk'],
             ['blk', 'blk', 'blu', 'blu', 'blk', 'blk'],
-            ['blu', 'blu', 'blu', 'blu', 'blu', 'blu']
+            ['blu', 'blu', 'blu', 'blu', 'blu', 'blu'],
+
+            ['blu', 'blu', 'blu', 'blu', 'blu', 'blu'],
+            ['cyn', 'cyn', 'cyn', 'cyn', 'cyn', 'cyn'],
+            ['grn', 'grn', 'grn', 'grn', 'grn', 'grn'],
+            ['yel', 'yel', 'yel', 'yel', 'yel', 'yel'],
+            ['red', 'red', 'red', 'red', 'red', 'red'],
+            ['mgn', 'mgn', 'mgn', 'mgn', 'mgn', 'mgn']
+
         ],
         'chases': [
-            [0],
-            [1, 2],
-            [1, 1, 2, 2],
-            [1, 0, 2, 0],
-            [3, 0, 4, 5,  6, 7, 8, 9,  8, 7, 6, 5,  10, 11, 12, 13]
+            {'division': 4, 'sequence': [0]},
+            {'division': 4, 'sequence': [1, 2]},
+            {'division': 8, 'sequence': [1, 1, 2, 2]},
+            {'division': 4, 'sequence': [1, 0, 2, 0]},
+            {'division': 4, 'sequence': [3, 0, 4, 5,  6, 7, 8, 9,  8, 7, 6, 5,  10, 11, 12, 13]},
+            {'division': 1, 'sequence': [14, 15, 16, 17, 18, 19]},
+            {'division': 1, 'sequence': [14, 14, 15, 15, 16, 16, 17, 17, 18, 18, 19, 19]}
         ]
     },
     'midi': {
@@ -75,6 +86,7 @@ class DMXMidi:
     start_ts:float
     running:bool
     thread:threading.Thread
+    division:int
 
     def __init__(self, conf) -> None:
         self.conf = conf
@@ -98,8 +110,9 @@ class DMXMidi:
             if cmd[0] == 'note_on':
                 self.note_on(cmd[1], cmd[2])
 
-    def start(self, chase:int, tempo:int, fade:float):
+    def start(self, chase:int, tempo:int, fade:float, division:int=4):
         self.thread = threading.Thread(target=self.run, args=(chase, tempo, fade))
+        self.division = division
         self.thread.start()
 
     def stop(self):
@@ -119,19 +132,20 @@ class DMXMidi:
 
         while self.running:
             chase = self.chase
+            division = self.conf['dmx']['chases'][chase]['division']
             now = round(time.time() * 1000) / 1000
             past_time = now - self.start_ts
-            steps = len(self.conf['dmx']['chases'][chase])
-            step = math.floor(past_time * self.tempo / 60) % steps
-            frag = (past_time * self.tempo / 60) - math.floor(past_time * self.tempo / 60)
-            print(f"Chase: {chase} Now:  {now}, Past {past_time},  Step: {step}, frag: {frag}")
+            steps = len(self.conf['dmx']['chases'][chase]['sequence'])
+            step = math.floor(past_time * self.tempo / 60 * division / 4) % steps
+            frag = (past_time * self.tempo / 60 * division / 4) - math.floor(past_time * self.tempo / 60 * division / 4)
+            # print(f"Chase: {chase} Now:  {now}, Past {past_time},  Step: {step}, frag: {frag}")
 
             next_step = (step + 1) % steps
             array_size = len(self.conf['dmx']['array'])
             for i in range(0, array_size):
                 light = self.conf['dmx']['lights'][self.conf['dmx']['array'][i]]
-                scene = self.conf['dmx']['scenes'][self.conf['dmx']['chases'][chase][step]]
-                next_scene = self.conf['dmx']['scenes'][self.conf['dmx']['chases'][chase][next_step]]
+                scene = self.conf['dmx']['scenes'][self.conf['dmx']['chases'][chase]['sequence'][step]]
+                next_scene = self.conf['dmx']['scenes'][self.conf['dmx']['chases'][chase]['sequence'][next_step]]
                 color = self.conf['dmx']['rgb_colors'][scene[i]]
                 next_color = self.conf['dmx']['rgb_colors'][next_scene[i]]
 
@@ -143,7 +157,7 @@ class DMXMidi:
                 if light['type'] == 'rgba':
                     self.channel_array[light['start_channel'] + 3] = 1
 
-            print(self.channel_array)
+            # print(self.channel_array)
 
             for i in range(0, self.channels):
                 self.note_on(self.start_note + i, int(self.channel_array[i]*127))
