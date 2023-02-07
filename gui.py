@@ -53,7 +53,7 @@ class CustomGUI(GUI):
         self.dmxmidi = dmxmidi
         self.dmxmidi_conf = dmxmidi_conf
         self.display = ST7565()
-        self.controller = GPIOController([1, 2, 3])
+        self.controller = GPIOController([13, 19, 26])
 
     def run(self):
         running = True
@@ -61,20 +61,27 @@ class CustomGUI(GUI):
         patch = 0
         self.dmxmidi.set_patch(patch)
         while running:
-            patch_name = self.dmxmidi_conf['dmx']['patches']['name']
-            patch_tempo = self.dmxmidi_conf['dmx']['patches']['tempo']
+            patch_name = self.dmxmidi_conf['patches'][patch]['name']+"                    "
+            patch_tempo = self.dmxmidi_conf['patches'][patch]['tempo']
             self.display.lcd_ascii168_string(0,0, patch_name[0:self.display.width])
             self.display.lcd_ascii168_string(0,2, f"{patch_tempo} bpm  "[0:self.display.width])
+            self.display.lcd_ascii168_string(0,4, f"Chase: {self.dmxmidi.chase}  ")
+            n = self.dmxmidi.step % self.dmxmidi.division
+            m = self.dmxmidi.division - n - 1 
+            tick = "["+(" " * n) + "o" + " " * m + "]"
+            self.display.lcd_ascii168_string(0,6, tick)
 
             key = self.controller.get_key()
-            if key >= 2:
+            if key != -1:
+                print(f"{key}")
+            if key > 2:
                 c = int(key)
                 if c < chases_count:
                     self.dmxmidi.chase = c
                 self.dmxmidi.reset()
-            elif key == 0:
+            elif key == 1:
                 patch = (patch + 1) % len(self.dmxmidi_conf['patches'])
                 self.dmxmidi.set_patch(patch)
-            elif key == 1:
+            elif key == 2:
                 patch = (patch + -1) % len(self.dmxmidi_conf['patches'])
                 self.dmxmidi.set_patch(patch)

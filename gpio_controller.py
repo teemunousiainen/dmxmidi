@@ -8,7 +8,7 @@ class GPIOController:
         self.pinmap = pinmap
         self.status = [0] * len(pinmap)
         for i in range(0, len(pinmap)):
-            GPIO.setup(self.pinmap[i], GPIO.OUT)
+            GPIO.setup(self.pinmap[i], GPIO.IN)
     
     def get_key(self) -> int:
         new_status = [0] * len(self.pinmap)
@@ -17,11 +17,15 @@ class GPIOController:
             new_status[i] = GPIO.input(self.pinmap[i])
 
         if sum(new_status) == 0 or sum(self.status) > 0:
-            key = None
+            key = -1
+        else:
+            key = 0
+            for i in range(0, len(self.pinmap)):
+                key = key << 1
+                j = len(self.pinmap) - i - 1
+                key = key | new_status[j]
 
-        key = 0
-        for i in range(0, len(self.pinmap)):
-            key = key | new_status[i]
-            key = key << 1
-
+        self.status = new_status
+        
+            
         return key

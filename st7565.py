@@ -9,12 +9,13 @@ import time
 
 
 class ST7565:
-    LCD_CS = 2
-    LCD_RST = 3
-    LCD_A0 = 4
+    LCD_CS = 6
+    LCD_RST = 5
+    LCD_A0 = 22
     LCD_CLK = 27
     LCD_SI = 17
-    width = 8
+    
+    width = 16
     height = 4
 
     def __init__(self) -> None:
@@ -65,10 +66,10 @@ class ST7565:
         self.lcd_tranfer_data(0x2F, 0)  # select internal power supply operating mode
         ##28~2F: Operating mode
 
-        self.lcd_tranfer_data(0x60, 0)  # Display start line set
+        self.lcd_tranfer_data(0x40, 0)  # Display start line set
         ##40~7F Display start address
 
-        self.lcd_tranfer_data(0x27, 0)  # V5 voltage regulator internal resistor ratio set(contrast)
+        self.lcd_tranfer_data(0x24, 0)  # V5 voltage regulator internal resistor ratio set(contrast)
         ##20~27 small~large
 
         self.lcd_tranfer_data(0x81, 0)  # Electronic volume mode set
@@ -85,7 +86,10 @@ class ST7565:
     def lcd_ascii168_string(self, x_pos, y_pos, string):
         string_len = len(string)
         for i in range(0, string_len):
-            self.lcd_ascii168(x_pos + i * 8, y_pos, ord(string[i]) - 32)
+            x = string[i]
+            if ord(x) > ord("~"):
+                x = ' '
+            self.lcd_ascii168(x_pos + i * 8, y_pos, ord(x) - 32)
 
 
     def lcd_ascii168(self, x_pos, y_pos, char):
