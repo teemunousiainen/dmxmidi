@@ -1,6 +1,5 @@
 import mido
 import time
-import random
 import math
 import threading
 
