@@ -63,8 +63,8 @@ class CustomGUI(GUI):
         while running:
             patch_name = self.dmxmidi_conf['dmx']['patches']['name']
             patch_tempo = self.dmxmidi_conf['dmx']['patches']['tempo']
-            self.display.lcd_ascii168_string(0,0, patch_name[0:display.width])
-            self.display.lcd_ascii168_string(0,2, f"{patch_tempo} bpm  "[0:display.width])
+            self.display.lcd_ascii168_string(0,0, patch_name[0:self.display.width])
+            self.display.lcd_ascii168_string(0,2, f"{patch_tempo} bpm  "[0:self.display.width])
 
             key = self.controller.get_key()
             if key >= 2:
