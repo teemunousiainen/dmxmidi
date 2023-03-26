@@ -22,7 +22,9 @@ class DMXMidi:
         self.start_note = self.conf['midi']['start_note']
         self.channels = self.conf['midi']['channels']
         try:
-            self.outport = mido.open_output(self.conf['midi']['device'])
+            ports = mido.get_output_names()
+            print(f"Midi ports: {str(ports)}")
+            self.outport = mido.open_output(ports[0])
         except IOError as e:
             print(str(e))
             self.outport = None

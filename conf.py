@@ -55,7 +55,7 @@ dmxmidi_conf = {
         ]
     },
     'midi': {
-        'device': 'UM-1',
+        'device': 'UM-1:UM-1 MIDI 1 24:0',
         'setup': [
             ['note_on', 100, 127],
             ['note_on', 102, 1],
