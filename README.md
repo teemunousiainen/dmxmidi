@@ -26,11 +26,19 @@ DMXMidi is a compact controlling software for DMX light setup for performances.
 | P35 GPIO 19   | D1         |
 | P37 GPIO 26   | D2         |
 
-
 ### LCD Display
-| Pine A64 | ST7565 |
-|----------|--------|
-|          |        |
-|          |        |
+| Pine A64      | ST7565   |
+|---------------|----------|
+| P11 GPIO 17   | SI       |
+| P13 GPIO 27   | CLK      |
+| P15 GPIO 22   | A0       |
+| P29 GPIO 6    | CS       |
+| P31 GPIO 5    | RST      |
+| P1 3.3V       | Vdd      |
+| P9 GND        | GND      |
+| P2 5V         | Anode (* |
+| P6 GNF        | Kathode  |
+
+*) Via 500 Ohm resistor
 
 # Configuration
